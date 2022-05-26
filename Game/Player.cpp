@@ -63,19 +63,19 @@ void Player::Move(MoveDirection direction)
 {
 	switch (direction)
 	{
-	case UP:
+	case MoveDirection::UP:
 		obj_pos_.y -= static_cast<int>(GetMoveLength());
 		obj_rect_.y = rect_y_[3];
 		break;
-	case DOWN:
+	case MoveDirection::DOWN:
 		obj_pos_.y += static_cast<int>(GetMoveLength());
 		obj_rect_.y = rect_y_[0];
 		break;
-	case LEFT:
+	case MoveDirection::LEFT:
 		obj_pos_.x -= static_cast<int>(GetMoveLength());
 		obj_rect_.y = rect_y_[1];
 		break;
-	case RIGHT:
+	case MoveDirection::RIGHT:
 		obj_pos_.x += static_cast<int>(GetMoveLength());
 		obj_rect_.y = rect_y_[2];
 		break;

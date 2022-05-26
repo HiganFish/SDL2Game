@@ -2,16 +2,29 @@
 // Created by rjd
 //
 #include <iostream>
+
 #include "Controller.h"
 
-Controller::Controller()
+Controller::Controller(const GameClientPtr& client):
+	game_client_ptr_(client),
+	control_message_ptr_(SpawnNewMessage<ControlMessage>())
 {
-
+	game_client_ptr_->SetMsgCallback(MessageType::CONTROL,
+			[this](ROLE_ID role_id, const BaseMessagePtr& msg)
+			{
+				ControlMessagePtr ptr = CastBaseMsgTo<ControlMessage>(msg);
+				input_deque_.push_back({role_id,
+										ptr->tick, ptr->move_direction});
+			});
 }
 
-void Controller::PushInput(int player_id, int logic_frame, MoveDirection direction)
+void Controller::PushInput(int role_id, int logic_frame, MoveDirection direction)
 {
-	input_deque_.push_back({ player_id, logic_frame, direction});
+	// input_deque_.push_back({ player_id, logic_frame, direction});
+	control_message_ptr_->tick = logic_frame;
+	control_message_ptr_->role_id = role_id;
+	control_message_ptr_->move_direction = direction;
+	game_client_ptr_->SendMsg(role_id, control_message_ptr_);
 }
 
 void Controller::PopInput(int current_logic_frame, std::vector<Input>& result)
@@ -25,7 +38,8 @@ void Controller::PopInput(int current_logic_frame, std::vector<Input>& result)
 		}
 		else
 		{
-			std::cout << "input some error" << std::endl;
+			// std::cout << "input some error" << std::endl;
+			result.push_back(input);
 		}
 		input_deque_.pop_front();
 	}

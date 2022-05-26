@@ -13,21 +13,21 @@ static MoveDirection GetInputDirection()
 	const uint8_t* key_state = SDL_GetKeyboardState(nullptr);
 	if (key_state[SDL_SCANCODE_RIGHT])
 	{
-		return RIGHT;
+		return MoveDirection::RIGHT;
 	}
 	else if (key_state[SDL_SCANCODE_LEFT])
 	{
-		return LEFT;
+		return MoveDirection::LEFT;
 	}
 	else if (key_state[SDL_SCANCODE_UP])
 	{
-		return UP;
+		return MoveDirection::UP;
 	}
 	else if (key_state[SDL_SCANCODE_DOWN])
 	{
-		return DOWN;
+		return MoveDirection::DOWN;
 	}
-	return NONE;
+	return MoveDirection::NONE;
 }
 
 static TTF_Font* default_font = nullptr;

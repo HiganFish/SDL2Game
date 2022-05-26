@@ -67,11 +67,11 @@ void LoadPlayer(SDL_Renderer* render_target,
 // 这个函数会被SDL中内置的main函数调用
 int main(int argc, char** argv)
 {
-	GameClient client("foo game client");
-	client.Connect("1", "127.0.0.1", "4000");
-
 	ROLE_ID main_player_id = 1;
-	// std::cin >> main_player_id;
+	std::cin >> main_player_id;
+
+	GameClientPtr client = std::make_shared<GameClient>("foo game client");
+	client->Connect(main_player_id, "127.0.0.1", "4000");
 
 	SDL_Init(SDL_INIT_VIDEO);
 	IMG_Init(IMG_INIT_PNG);
@@ -85,8 +85,6 @@ int main(int argc, char** argv)
 			SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	SDL_SetRenderDrawColor(render_target, 31, 199, 240, 0);
 
-
-
 	PlayerPtr main_player;
 	LoadPlayer(render_target, main_player_id, main_player);
 	if (!main_player)
@@ -94,7 +92,9 @@ int main(int argc, char** argv)
 		abort();
 	}
 
-	Controller game_controller;
+	Controller game_controller(client);
+	game_controller.PushInput(main_player->GetPlayerId(),
+			0, MoveDirection::NONE);
 
 	bool is_running = true;
 	SDL_Event ev;
@@ -130,7 +130,7 @@ int main(int argc, char** argv)
 			}
 			pop_input_vec.clear();
 
-			client.TestDelay("1", main_player_id);
+			// client->TestDelay(main_player_id);
 		}
 
 		while (frame_status.sum_time_ms >= FRAME_MS)
@@ -138,7 +138,7 @@ int main(int argc, char** argv)
 			frame_status.sum_time_ms -= FRAME_MS;
 
 			auto in = GetInputDirection();
-			if (in != NONE)
+			if (in != MoveDirection::NONE)
 			{
 				game_controller.PushInput(main_player->GetPlayerId(),
 						frame_status.logic_frame_count, in);
@@ -156,7 +156,7 @@ int main(int argc, char** argv)
 			}
 
 			PrintText(render_target,
-					std::to_string(client.GetDelayMs()) + " ms",
+					std::to_string(client->GetDelayMs()) + " ms",
 					{500, 0});
 
 			SDL_RenderPresent(render_target);
