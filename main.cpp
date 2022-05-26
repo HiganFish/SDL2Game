@@ -123,11 +123,15 @@ int main(int argc, char** argv)
 
 			SDL_RenderClear(render_target);
 
-			main_player->Update(FRAME_MS);
-			main_player->Draw();
-			main_player->PrintPos(font, color, { 0, 0});
+			int print_y = 0;
+			for (auto& player : player_map)
+			{
+				player.second->Update(FRAME_MS);
+				player.second->Draw();
+				player.second->PrintPos(font, color, { 0, print_y});
 
-
+				print_y += 20;
+			}
 			SDL_RenderPresent(render_target);
 		}
 	}

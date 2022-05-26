@@ -43,7 +43,8 @@ void Player::Update(uint32_t delta_time_ms)
 
 void Player::PrintPos(TTF_Font* font, const SDL_Color& color, const SDL_Point& draw_pos)
 {
-	std::string pos = std::to_string(obj_pos_.x)  + ", " + std::to_string(obj_pos_.y);
+	std::string pos = std::to_string(player_id_) + ": "
+			+ std::to_string(obj_pos_.x)  + ", " + std::to_string(obj_pos_.y);
 	SDL_Surface* text_surface = TTF_RenderText_Solid(font, pos.c_str(), color);
 	SDL_Texture* text_texture = SDL_CreateTextureFromSurface(renderer_, text_surface);
 	// 注意初始化 不然 x y 可能为脏数据
