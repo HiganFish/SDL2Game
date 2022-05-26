@@ -7,6 +7,9 @@
 #include <memory>
 #include <unordered_map>
 
+#include <GameClient/GameClient.h>
+#include <Utils/TimeUtils.h>
+
 #include "Game/Player.h"
 #include "Game/Controller.h"
 #include "Game/SDLUtils.h"
@@ -21,7 +24,7 @@ const int LOGIC_FRAME_MS = 1000 / LOGIC_FPS;
 
 using PlayerPtr = std::shared_ptr<Player>;
 std::unordered_map<int, PlayerPtr> player_map;
-std::vector<ROLE_ID> players_id{1000, 2000, 3000, 4000};
+std::vector<ROLE_ID> players_id{1, 2, 3, 4};
 
 PlayerPtr CreateDefaultPlayer(SDL_Renderer* renderer, ROLE_ID player_id)
 {
@@ -64,6 +67,20 @@ void LoadPlayer(SDL_Renderer* render_target,
 // 这个函数会被SDL中内置的main函数调用
 int main(int argc, char** argv)
 {
+	PingMessagePtr ping_message_ptr = std::make_shared<PingMessage>();
+	ping_message_ptr->timestamp = NOW_MS;
+	ping_message_ptr->role_id = 2000;
+
+	GameClient client("foo game client");
+	client.SetMsgCallback(MessageType::PING,
+			[](ROLE_ID role_id, const BaseMessagePtr& ping_msg_ptr)
+			{
+				std::cout << ping_msg_ptr->DebugMessage();
+			});
+
+	client.Connect("1", "127.0.0.1", "4000");
+	client.SendMsg("1", ping_message_ptr);
+
 	ROLE_ID main_player_id;
 	std::cin >> main_player_id;
 

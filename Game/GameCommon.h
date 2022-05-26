@@ -5,8 +5,9 @@
 #ifndef SDL2GAME_GAMECOMMON_H
 #define SDL2GAME_GAMECOMMON_H
 
+#ifndef ROLE_ID
 #define ROLE_ID int
-
+#endif
 enum MoveDirection
 {
 	NONE,
