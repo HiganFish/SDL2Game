@@ -85,6 +85,10 @@ int main(int argc, char** argv)
 
 	PlayerPtr main_player;
 	LoadPlayer(render_target, main_player_id, main_player);
+	if (!main_player)
+	{
+		abort();
+	}
 
 	Controller game_controller;
 
