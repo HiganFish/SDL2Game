@@ -14,8 +14,14 @@
 int windows_length = 600;
 int box_length = 30;
 
+const int FPS = 30;
+const int LOGIC_FPS = 10;
+const int FRAME_MS = 1000 / FPS;
+const int LOGIC_FRAME_MS = 1000 / LOGIC_FPS;
+
 using PlayerPtr = std::shared_ptr<Player>;
 std::unordered_map<int, PlayerPtr> player_map;
+std::vector<ROLE_ID> players_id{1000, 2000, 3000, 4000};
 
 PlayerPtr CreateDefaultPlayer(SDL_Renderer* renderer, ROLE_ID player_id)
 {
@@ -35,10 +41,32 @@ struct FrameStatus
 	int logic_frame_count = 0;
 };
 
+void LoadPlayer(SDL_Renderer* render_target,
+		ROLE_ID main_player_id, PlayerPtr& main_player)
+{
+	for (ROLE_ID player_id : players_id)
+	{
+		auto other_player =
+				CreateDefaultPlayer(render_target, player_id);
+		player_map.insert({player_id, other_player});
+		if (main_player_id == player_id)
+		{
+			main_player = other_player;
+		}
+	}
+	if (!main_player)
+	{
+		std::cout << "create main player error" << std::endl;
+	}
+}
+
 // main 函数被声明为了宏，所以argc和argv必须要有
 // 这个函数会被SDL中内置的main函数调用
 int main(int argc, char** argv)
 {
+	ROLE_ID main_player_id;
+	std::cin >> main_player_id;
+
 	SDL_Init(SDL_INIT_VIDEO);
 	IMG_Init(IMG_INIT_PNG);
 	TTF_Init();
@@ -55,28 +83,13 @@ int main(int argc, char** argv)
 	TTF_Font* font = TTF_OpenFont("../wryh.ttf", 20);
 	SDL_Color color{255, 255, 255, 0};
 
-	ROLE_ID main_player_id = 2000;
-	std::vector<ROLE_ID> other_players_id{3000, 4000};
-
-	PlayerPtr main_player = CreateDefaultPlayer(render_target, main_player_id);
-	player_map.insert({main_player_id, main_player});
-
-	for (ROLE_ID other_player_id : other_players_id)
-	{
-		auto other_player =
-				CreateDefaultPlayer(render_target, other_player_id);
-		player_map.insert({other_player_id, other_player});
-	}
+	PlayerPtr main_player;
+	LoadPlayer(render_target, main_player_id, main_player);
 
 	Controller game_controller;
 
 	bool is_running = true;
 	SDL_Event ev;
-
-	const int FPS = 30;
-	const int LOGIC_FPS = 10;
-	const int FRAME_MS = 1000 / FPS;
-	const int LOGIC_FRAME_MS = 1000 / LOGIC_FPS;
 
 	FrameStatus frame_status;
 

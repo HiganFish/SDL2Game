@@ -18,4 +18,4 @@ set(GAME_SRCS
 add_executable(SDL2Game ${GAME_SRCS})
 target_include_directories(SDL2Game PUBLIC ${SDL2_INCLUDE_DIR})
 target_link_directories(SDL2Game PUBLIC ${SDL2_LIBRARY_DIR})
-target_link_libraries(SDL2Game PUBLIC mingw32 SDL2main SDL2 SDL2_image SDL2_ttf)
+target_link_libraries(SDL2Game PRIVATE mingw32 SDL2main SDL2 SDL2_image SDL2_ttf)
