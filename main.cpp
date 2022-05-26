@@ -67,26 +67,14 @@ void LoadPlayer(SDL_Renderer* render_target,
 // 这个函数会被SDL中内置的main函数调用
 int main(int argc, char** argv)
 {
-	PingMessagePtr ping_message_ptr = std::make_shared<PingMessage>();
-	ping_message_ptr->timestamp = NOW_MS;
-	ping_message_ptr->role_id = 2000;
-
 	GameClient client("foo game client");
-	client.SetMsgCallback(MessageType::PING,
-			[](ROLE_ID role_id, const BaseMessagePtr& ping_msg_ptr)
-			{
-				std::cout << ping_msg_ptr->DebugMessage();
-			});
-
 	client.Connect("1", "127.0.0.1", "4000");
-	client.SendMsg("1", ping_message_ptr);
 
-	ROLE_ID main_player_id;
-	std::cin >> main_player_id;
+	ROLE_ID main_player_id = 1;
+	// std::cin >> main_player_id;
 
 	SDL_Init(SDL_INIT_VIDEO);
 	IMG_Init(IMG_INIT_PNG);
-	TTF_Init();
 
 	SDL_Window*  window = SDL_CreateWindow("Test Name", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 			windows_length, windows_length, SDL_WINDOW_SHOWN);
@@ -97,8 +85,7 @@ int main(int argc, char** argv)
 			SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	SDL_SetRenderDrawColor(render_target, 31, 199, 240, 0);
 
-	TTF_Font* font = TTF_OpenFont("../Resource/wryh.ttf", 20);
-	SDL_Color color{255, 255, 255, 0};
+
 
 	PlayerPtr main_player;
 	LoadPlayer(render_target, main_player_id, main_player);
@@ -142,6 +129,8 @@ int main(int argc, char** argv)
 				player_map[input.player_id]->Move(input.direction);
 			}
 			pop_input_vec.clear();
+
+			client.TestDelay("1", main_player_id);
 		}
 
 		while (frame_status.sum_time_ms >= FRAME_MS)
@@ -162,10 +151,14 @@ int main(int argc, char** argv)
 			{
 				player.second->Update(FRAME_MS);
 				player.second->Draw();
-				player.second->PrintPos(font, color, { 0, print_y});
-
+				player.second->PrintPos({ 0, print_y});
 				print_y += 20;
 			}
+
+			PrintText(render_target,
+					std::to_string(client.GetDelayMs()) + " ms",
+					{500, 0});
+
 			SDL_RenderPresent(render_target);
 		}
 	}

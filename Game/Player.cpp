@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <array>
 #include "Player.h"
+#include "SDLUtils.h"
 
 Player::Player(SDL_Renderer* renderer, const std::string& filepath, const SDL_Rect& player_pos,
 		int move_speed, int player_id):
@@ -41,19 +42,11 @@ void Player::Update(uint32_t delta_time_ms)
 	}
 }
 
-void Player::PrintPos(TTF_Font* font, const SDL_Color& color, const SDL_Point& draw_pos)
+void Player::PrintPos(const SDL_Point& draw_pos)
 {
 	std::string pos = std::to_string(player_id_) + ": "
 			+ std::to_string(obj_pos_.x)  + ", " + std::to_string(obj_pos_.y);
-	SDL_Surface* text_surface = TTF_RenderText_Solid(font, pos.c_str(), color);
-	SDL_Texture* text_texture = SDL_CreateTextureFromSurface(renderer_, text_surface);
-	// 注意初始化 不然 x y 可能为脏数据
-	SDL_Rect font_Rect{draw_pos.x, draw_pos.y, 0, 0};
-	SDL_QueryTexture(text_texture, nullptr, nullptr, &font_Rect.w, &font_Rect.h);
-	SDL_RenderCopy(renderer_, text_texture, nullptr, &font_Rect);
-
-	SDL_FreeSurface(text_surface);
-	SDL_DestroyTexture(text_texture);
+	PrintText(renderer_, pos, draw_pos);
 }
 
 void Player::SetMoveLength(int move_length)

@@ -21,7 +21,7 @@ public:
 
 	void Update(uint32_t delta_time_ms) override;
 
-	void PrintPos(TTF_Font* font, const SDL_Color& color, const SDL_Point& draw_pos);
+	void PrintPos(const SDL_Point& draw_pos);
 
 	void SetMoveLength(int move_length);
 
