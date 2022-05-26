@@ -7,9 +7,9 @@
 #include <memory>
 #include <unordered_map>
 
-#include "Player.h"
-#include "Controller.h"
-#include "SDLUtils.h"
+#include "Game/Player.h"
+#include "Game/Controller.h"
+#include "Game/SDLUtils.h"
 
 int windows_length = 600;
 int box_length = 30;
@@ -26,7 +26,7 @@ std::vector<ROLE_ID> players_id{1000, 2000, 3000, 4000};
 PlayerPtr CreateDefaultPlayer(SDL_Renderer* renderer, ROLE_ID player_id)
 {
 	return std::make_shared<Player>(renderer,
-			"../sprite-sheet.png",
+			"../Resource/sprite-sheet.png",
 			SDL_Rect{0, 0, box_length, box_length},
 			5, player_id);
 }
@@ -80,7 +80,7 @@ int main(int argc, char** argv)
 			SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	SDL_SetRenderDrawColor(render_target, 31, 199, 240, 0);
 
-	TTF_Font* font = TTF_OpenFont("../wryh.ttf", 20);
+	TTF_Font* font = TTF_OpenFont("../Resource/wryh.ttf", 20);
 	SDL_Color color{255, 255, 255, 0};
 
 	PlayerPtr main_player;
