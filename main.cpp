@@ -68,10 +68,15 @@ void LoadPlayer(SDL_Renderer* render_target,
 int main(int argc, char** argv)
 {
 	ROLE_ID main_player_id = 1;
-	std::cin >> main_player_id;
+	// std::cin >> main_player_id;
 
 	GameClientPtr client = std::make_shared<GameClient>("foo game client");
-	client->Connect(main_player_id, "127.0.0.1", "4000");
+	bool ret = client->Connect(main_player_id, "127.0.0.1", "4000");
+	if (!ret)
+	{
+		std::cout << "connect error" << std::endl;
+		return -1;
+	}
 
 	SDL_Init(SDL_INIT_VIDEO);
 	IMG_Init(IMG_INIT_PNG);
@@ -116,6 +121,30 @@ int main(int argc, char** argv)
 			{
 				is_running = false;
 			}
+			else if (ev.type == SDL_KEYDOWN)
+			{
+				switch (ev.key.keysym.sym)
+				{
+				case SDLK_RIGHT:
+					game_controller.PushInput(main_player->GetPlayerId(),
+							frame_status.logic_frame_count, MoveDirection::RIGHT);
+					break;
+				case SDLK_LEFT:
+					game_controller.PushInput(main_player->GetPlayerId(),
+							frame_status.logic_frame_count, MoveDirection::LEFT);
+					break;
+				case SDLK_DOWN:
+					game_controller.PushInput(main_player->GetPlayerId(),
+							frame_status.logic_frame_count, MoveDirection::DOWN);
+					break;
+				case SDLK_UP:
+					game_controller.PushInput(main_player->GetPlayerId(),
+							frame_status.logic_frame_count, MoveDirection::UP);
+					break;
+				default:
+					break;
+				}
+			}
 		}
 
 		while (frame_status.sum_logic_time_ms >= LOGIC_FRAME_MS)
@@ -130,19 +159,12 @@ int main(int argc, char** argv)
 			}
 			pop_input_vec.clear();
 
-			// client->TestDelay(main_player_id);
+			client->TestDelay(main_player_id);
 		}
 
 		while (frame_status.sum_time_ms >= FRAME_MS)
 		{
 			frame_status.sum_time_ms -= FRAME_MS;
-
-			auto in = GetInputDirection();
-			if (in != MoveDirection::NONE)
-			{
-				game_controller.PushInput(main_player->GetPlayerId(),
-						frame_status.logic_frame_count, in);
-			}
 
 			SDL_RenderClear(render_target);
 
@@ -160,6 +182,12 @@ int main(int argc, char** argv)
 					{500, 0});
 
 			SDL_RenderPresent(render_target);
+		}
+
+		auto frame_time = SDL_GetTicks() - frame_status.current_time;
+		if (frame_time < FRAME_MS)
+		{
+			SDL_Delay(FRAME_MS - frame_time);
 		}
 	}
 
