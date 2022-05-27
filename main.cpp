@@ -68,7 +68,7 @@ void LoadPlayer(SDL_Renderer* render_target,
 int main(int argc, char** argv)
 {
 	ROLE_ID main_player_id = 1;
-	// std::cin >> main_player_id;
+	std::cin >> main_player_id;
 
 	GameClientPtr client = std::make_shared<GameClient>("foo game client");
 	bool ret = client->Connect(main_player_id, "127.0.0.1", "4000");
@@ -194,5 +194,8 @@ int main(int argc, char** argv)
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(render_target);
 	SDL_Quit();
+
+	std::chrono::milliseconds(20);
+
 	return 0;
 }

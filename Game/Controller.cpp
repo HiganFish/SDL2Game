@@ -32,15 +32,17 @@ void Controller::PopInput(int current_logic_frame, std::vector<Input>& result)
 	while (!input_deque_.empty())
 	{
 		auto& input = input_deque_.front();
-		if (input_deque_.front().logic_frame + 1 == current_logic_frame)
+		if (current_logic_frame >= input_deque_.front().logic_frame)
 		{
 			result.push_back(input);
+			input_deque_.pop_front();
 		}
 		else
 		{
+			break;
 			// std::cout << "input some error" << std::endl;
-			result.push_back(input);
+			// result.push_back(input);
 		}
-		input_deque_.pop_front();
+		// input_deque_.pop_front();
 	}
 }
