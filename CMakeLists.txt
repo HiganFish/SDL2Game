@@ -15,8 +15,6 @@ set(GNF_LIBRARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../GameNetworkFramework/cmake-bu
 set(GAME_SRCS
         Game/Player.cpp
         Game/Object.cpp
-        Game/Controller.cpp
-        Game/GameCommon.h
         Game/SDLUtils.h
         )
 

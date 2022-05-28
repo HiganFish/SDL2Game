@@ -8,10 +8,10 @@
 #include <unordered_map>
 
 #include <GameClient/GameClient.h>
+#include <GameClient/GameController.h>
 #include <Utils/TimeUtils.h>
 
 #include "Game/Player.h"
-#include "Game/Controller.h"
 #include "Game/SDLUtils.h"
 
 int windows_length = 600;
@@ -71,8 +71,8 @@ int main(int argc, char** argv)
 	std::cin >> main_player_id;
 
 	GameClientPtr client = std::make_shared<GameClient>("foo game client");
-	// bool ret = client->Connect(main_player_id, "127.0.0.1", "4000");
-	bool ret = client->Connect(main_player_id, "101.35.118.229", "4000");
+	bool ret = client->Connect(main_player_id, "127.0.0.1", "4000");
+	// bool ret = client->Connect(main_player_id, "101.35.118.229", "4000");
 	if (!ret)
 	{
 		std::cout << "connect error" << std::endl;
@@ -98,7 +98,7 @@ int main(int argc, char** argv)
 		abort();
 	}
 
-	Controller game_controller(client);
+	GameController game_controller(client);
 	game_controller.PushInput(main_player->GetPlayerId(),
 			0, MoveDirection::NONE);
 

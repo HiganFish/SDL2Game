@@ -8,7 +8,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include "Object.h"
-#include "GameCommon.h"
+#include "GameClient/GameController.h"
 
 class Player : public Object
 {
