@@ -71,7 +71,8 @@ int main(int argc, char** argv)
 	std::cin >> main_player_id;
 
 	GameClientPtr client = std::make_shared<GameClient>("foo game client");
-	bool ret = client->Connect(main_player_id, "127.0.0.1", "4000");
+	// bool ret = client->Connect(main_player_id, "127.0.0.1", "4000");
+	bool ret = client->Connect(main_player_id, "101.35.118.229", "4000");
 	if (!ret)
 	{
 		std::cout << "connect error" << std::endl;
@@ -101,10 +102,17 @@ int main(int argc, char** argv)
 	game_controller.PushInput(main_player->GetPlayerId(),
 			0, MoveDirection::NONE);
 
+	client->TestDelay(main_player_id);
+	auto server_rtt = client->GetDelayMs();
+	uint64_t server_time_start = client->WaitForGameStart(main_player_id);
+	printf("rtt: %lu, server_time: %zu, local_time: %zu\r\n",
+			server_rtt, server_time_start, NOW_MS);
+
 	bool is_running = true;
 	SDL_Event ev;
-
-	FrameStatus frame_status;
+	FrameStatus frame_status{};
+	// add server delay
+	frame_status.sum_logic_time_ms = server_rtt / 2;
 
 	std::vector<Input> pop_input_vec;
 	while (is_running)
