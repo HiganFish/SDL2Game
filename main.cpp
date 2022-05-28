@@ -63,6 +63,11 @@ void LoadPlayer(SDL_Renderer* render_target,
 	}
 }
 
+void Init()
+{
+
+}
+
 // main 函数被声明为了宏，所以argc和argv必须要有
 // 这个函数会被SDL中内置的main函数调用
 int main(int argc, char** argv)
@@ -72,12 +77,34 @@ int main(int argc, char** argv)
 
 	GameClientPtr client = std::make_shared<GameClient>("foo game client");
 	bool ret = client->Connect(main_player_id, "127.0.0.1", "4000");
-	// bool ret = client->Connect(main_player_id, "101.35.118.229", "4000");
+	if (!ret)
+	{
+		ret = client->Connect(main_player_id, "101.35.118.229", "4000");
+	}
 	if (!ret)
 	{
 		std::cout << "connect error" << std::endl;
 		return -1;
 	}
+	else
+	{
+		std::cout << "connect success" << std::endl;
+	}
+	GameController game_controller(client);
+	bool enter_room_ret = client->EnterRoom(main_player_id, 2);
+	if (enter_room_ret)
+	{
+		std::cout << "Enter Room success" << std::endl;
+	}
+	else
+	{
+		std::cout << "Enter Room Failed" << std::endl;
+	}
+	client->TestDelay(main_player_id);
+	auto server_rtt = client->GetDelayMs();
+	uint64_t server_time_start = client->WaitForGameStart(main_player_id);
+	printf("rtt: %lu, server_time: %zu, local_time: %zu\r\n",
+			server_rtt, server_time_start, NOW_MS);
 
 	SDL_Init(SDL_INIT_VIDEO);
 	IMG_Init(IMG_INIT_PNG);
@@ -97,16 +124,6 @@ int main(int argc, char** argv)
 	{
 		abort();
 	}
-
-	GameController game_controller(client);
-	game_controller.PushInput(main_player->GetPlayerId(),
-			0, MoveDirection::NONE);
-
-	client->TestDelay(main_player_id);
-	auto server_rtt = client->GetDelayMs();
-	uint64_t server_time_start = client->WaitForGameStart(main_player_id);
-	printf("rtt: %lu, server_time: %zu, local_time: %zu\r\n",
-			server_rtt, server_time_start, NOW_MS);
 
 	bool is_running = true;
 	SDL_Event ev;
